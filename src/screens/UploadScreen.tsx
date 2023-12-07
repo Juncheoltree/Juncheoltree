@@ -35,21 +35,31 @@ export const UploadScreen = () => {
   const onSubmit = useCallback(async () => {
     navigation.pop();
     const asset = image.assets![0];
+    console.log('asset', asset);
 
     const extension = asset.fileName?.split('.').pop();
     const storage = getStorage();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const randomString = uuidv4() as string;
+    console.log(randomString);
     const reference = ref(
       storage,
       `/photo/${user!.id}/${randomString}.${extension || ''}`
     );
+    console.log('reference', reference);
 
     try {
-      await uploadBytes(reference, await uriToBlob(asset.uri), {
+      // const blob = await uriToBlob(asset.uri);
+      // console.log('blob', blob);
+      const response = await fetch(asset.uri);
+      const blob = await response.blob();
+      console.log('blob', blob);
+      console.log('uploadBytes', uploadBytes);
+      await uploadBytes(reference, blob, {
         contentType: asset.type,
       });
       const photoURL = await getDownloadURL(reference);
+      console.log('photoURL', photoURL);
       await createPost({ user: user!, photoURL, description });
     } catch (e) {
       console.error(e);

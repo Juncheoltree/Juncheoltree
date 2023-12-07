@@ -45,11 +45,15 @@ export const UploadScreen = () => {
       `/photo/${user!.id}/${randomString}.${extension || ''}`
     );
 
-    await uploadBytes(reference, await uriToBlob(asset.uri), {
-      contentType: asset.type,
-    });
-    const photoURL = await getDownloadURL(reference);
-    await createPost({ user: user!, photoURL, description });
+    try {
+      await uploadBytes(reference, await uriToBlob(asset.uri), {
+        contentType: asset.type,
+      });
+      const photoURL = await getDownloadURL(reference);
+      await createPost({ user: user!, photoURL, description });
+    } catch (e) {
+      console.error(e);
+    }
   }, [image, user, description, navigation]);
 
   useEffect(() => {
